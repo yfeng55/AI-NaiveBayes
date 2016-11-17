@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public class Util {
 
+    public static final double EPSILON = 0.1;
+
+
     // L(W|C) - negative log probability
     public static double L_WC(double P_WC){
         return -1.0 * (Math.log(P_WC) / Math.log(2));
@@ -15,13 +18,13 @@ public class Util {
     }
 
     // P(W|C) - probability of a word given category C
-    public static double P_WC(String w, String c, double epsilon, ArrayList<Biography> bioslist){
-        return (freq_WC(w, c, bioslist) + epsilon) / (1.0 + 2.0 * epsilon);
+    public static double P_WC(String w, String c, ArrayList<Biography> bioslist){
+        return (freq_WC(w, c, bioslist) + EPSILON) / (1.0 + 2.0 * EPSILON);
     }
 
     // P(C) - probability of category C
-    public static double P_C(String c, double epsilon, int num_categories, ArrayList<Biography> bioslist){
-        return (freq_C(c, bioslist) + epsilon) / (1.0 + num_categories * epsilon);
+    public static double P_C(String c, int num_categories, ArrayList<Biography> bioslist){
+        return (freq_C(c, bioslist) + EPSILON) / (1.0 + num_categories * EPSILON);
     }
 
 
