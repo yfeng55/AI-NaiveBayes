@@ -9,11 +9,15 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static int num_entries;
     public static final String STOPWORDS_FILE = "./stopwords.txt";
+    public static final double EPSILON = 0.1;
+
+    public static int num_entries;
+    public static HashSet<String> categories;
     public static HashSet<String> stopwords;
     public static ArrayList<Biography> training_bios;
     public static ArrayList<Biography> test_bios;
+
 
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -23,31 +27,6 @@ public class Main {
         System.out.println();
 
 
-    }
-
-
-
-    // return the number of bios of category C in that contain word W
-    // (doesn't matter the number exact count of W as long is it's at least 1)
-    public static int occ_WC(String w, String c, ArrayList<Biography> bioslist){
-        int count = 0;
-        for(Biography b : bioslist){
-            if(b.description.contains(w) && b.category.equals(c)){
-                count++;
-            }
-        }
-        return count;
-    }
-
-    // return the number of bios of category C in a list of bios
-    public static int occ_C(String c, ArrayList<Biography> bioslist){
-        int count = 0;
-        for(Biography b : bioslist){
-            if(b.category.equals(c)){
-                count++;
-            }
-        }
-        return count;
     }
 
 
@@ -98,6 +77,12 @@ public class Main {
             }
         }
 
+        //initialize a set of all unique categories
+        for(Biography b : training_bios){
+            if(!categories.contains(b.category)){
+                categories.add(b.category);
+            }
+        }
     }
 
 
