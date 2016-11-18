@@ -29,9 +29,9 @@ public class Main {
 
         getInput(args[0], args[1]);
 
-        // LEARNING PHASE //
+        ///// LEARNING PHASE /////
         HashMap<String, Double> category_probs = new HashMap<>();
-        HashMap<Pair<String,String>, Double> wordcategory_probs = new HashMap<>();
+        HashMap<String, Double> wordcategory_probs = new HashMap<>();
 
         //for each category, compute P(C) and compute P(W|C) for all word-category combinations
         for(String c : categories){
@@ -42,13 +42,43 @@ public class Main {
             for(String w : trainingwordset){
                 if(!stopwords.contains(w)){
                     double prob_wc = Util.P_WC(w, c, training_bios);
-                    wordcategory_probs.put(new Pair<String, String>(w, c), Util.L_WC(prob_wc));
+                    wordcategory_probs.put(w+","+c, Util.L_WC(prob_wc));
                 }
             }
         }
 
 
-        System.out.println();
+
+        ///// CLASSIFICATION PHASE /////
+
+        //for each biography B in the test set
+        for(Biography b : test_bios){
+
+            System.out.println("-----------------------\n" + b.person);
+
+            //for each category, compute L(C|B) - sum of all L(W|C) probabilities for all W in B
+            for(String c : categories){
+
+                HashSet<String> viewedwords = new HashSet<>();
+
+                //get L(C)
+                double lc = category_probs.get(c);
+
+                //get sum of all L(W|C) values
+                double lwc_sum = 0.0;
+                for(String w : b.description.split("\\s+")){
+                    if(trainingwordset.contains(w.replaceAll("[^\\w\\s]","")) && !stopwords.contains(w.replaceAll("[^\\w\\s]",""))){
+                        String key = w.replaceAll("[^\\w\\s]","") + "," + c;
+                        lwc_sum += wordcategory_probs.get(key);
+                    }
+                }
+
+
+                double lcb = lc + lwc_sum;
+                System.out.println(lcb);
+            }
+
+        }
 
 
     }
@@ -115,7 +145,7 @@ public class Main {
         trainingwordset = new HashSet<>();
         for(Biography b : training_bios){
             for(String s : b.description.split("\\s+")){
-                if(!trainingwordset.contains(s)){ trainingwordset.add(s); }
+                if(!trainingwordset.contains(s)){ trainingwordset.add(s.replaceAll("[^\\w\\s]","")); }
             }
 //            for(String s : b.person.split("\\s+")){
 //                if(!trainingwordset.contains(s)){ trainingwordset.add(s); }
