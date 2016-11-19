@@ -1,6 +1,3 @@
-package com.yf833;
-import javafx.util.Pair;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
