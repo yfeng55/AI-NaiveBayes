@@ -52,10 +52,13 @@ public class Main {
 
         ///// CLASSIFICATION PHASE /////
 
+        //track the number of correct predictions
+        int num_correct = 0;
+
         //for each biography B in the test set
         for(Biography b : test_bios){
 
-            System.out.println("-----------------------\n" + b.person);
+            System.out.print("\n\n" + b.person + ".");
 
             double lowest_prob = MIN_PROB;
             String predicted_category = "";
@@ -76,7 +79,7 @@ public class Main {
                 }
                 double lcb = lc + lwc_sum;
                 cb_probs.put(c, lcb);
-                System.out.println(lcb);
+                //System.out.println(lcb);
 
                 //update the lowest probability (used in recovering the actual probability)
                 if(lcb < lowest_prob){
@@ -86,7 +89,14 @@ public class Main {
             }
 
             // 2. get the prediction for this bio
-            System.out.println("prediction: " + predicted_category);
+            System.out.print("\tPrediction: " + predicted_category + ".");
+            if(predicted_category.replaceAll("[^\\w\\s]","").equals(b.category.replaceAll("[^\\w\\s]",""))){
+                System.out.println("\tRight.");
+                num_correct++;
+            }else{
+                System.out.println("\tWrong.");
+            }
+
 
             // 3. recover and print actual probabilities
             double sval = 0.0;
@@ -97,11 +107,15 @@ public class Main {
             }
             for(String c : categories){
                 double actual_prob = Math.pow(2.0, (lowest_prob - cb_probs.get(c))) / sval;
-                System.out.println("actual probability: " + actual_prob);
+                System.out.print(c + ": " + String.format("%.2f", actual_prob) + "\t\t");
             }
 
 
         }
+
+        //print the overall accuracy of the classification phase
+        double overall_accuracy = num_correct / (double) test_bios.size();
+        System.out.println("\n\nOverall accuracy: " + num_correct + " out of " + test_bios.size() + " = " + overall_accuracy + ".");
 
 
     }
@@ -142,7 +156,7 @@ public class Main {
 
         //read in the next entries into test data
         while(corpus_scan.hasNextLine()){
-            String person = corpus_scan.nextLine().toLowerCase();
+            String person = corpus_scan.nextLine();
             String field = corpus_scan.nextLine().toLowerCase();
             String description = corpus_scan.nextLine().toLowerCase();
 
