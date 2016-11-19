@@ -135,35 +135,51 @@ public class Main {
             stopwords.add(s.toLowerCase());
         }
 
+
         //read in the first N entries as training data
         Scanner corpus_scan = new Scanner(new File(corpuspath), "UTF-8");
         training_bios = new ArrayList<>();
         test_bios = new ArrayList<>();
 
+
+        //read in first N entries in the input file
         for(int i=0; i<num_entries; i++){
             String person = corpus_scan.nextLine().toLowerCase();
             String field = corpus_scan.nextLine().toLowerCase();
-            String description = corpus_scan.nextLine().toLowerCase();
+            String description = "";
+
+            while(corpus_scan.hasNextLine()){
+                String nextline = corpus_scan.nextLine().toLowerCase();
+                if(nextline.isEmpty()){
+                    break;
+                }else{
+                    description += nextline;
+                }
+            }
+
+            System.out.println("person: " + person);
+            System.out.println("field: " + field);
+            System.out.println("description: " + description);
 
             training_bios.add(new Biography(person, field, description));
-            //skip empty line
-            if(corpus_scan.hasNextLine()){
-                corpus_scan.nextLine();
-            }
+
         }
 
         //read in the next entries into test data
         while(corpus_scan.hasNextLine()){
             String person = corpus_scan.nextLine();
             String field = corpus_scan.nextLine().toLowerCase();
-            String description = corpus_scan.nextLine().toLowerCase();
-
+            String description = "";
+            while(corpus_scan.hasNextLine()){
+                String nextline = corpus_scan.nextLine().toLowerCase();
+                if(nextline.isEmpty()){
+                    break;
+                }else{
+                    description += nextline;
+                }
+            }
             test_bios.add(new Biography(person, field, description));
 
-            //skip empty line
-            if(corpus_scan.hasNextLine()){
-                corpus_scan.nextLine();
-            }
         }
 
 
