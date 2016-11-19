@@ -72,10 +72,11 @@ public class Main {
                 //get sum of all L(W|C) values
                 double lwc_sum = 0.0;
                 for(String w : b.description.split("\\s+")){
-                    if(trainingwordset.contains(w.replaceAll("[^\\w\\s]","")) && !stopwords.contains(w.replaceAll("[^\\w\\s]",""))){
+                    if(trainingwordset.contains(w.replaceAll("[^\\w\\s]","")) && !stopwords.contains(w.replaceAll("[^\\w\\s]","")) && !viewedwords.contains(w.replaceAll("[^\\w\\s]",""))){
                         String key = w.replaceAll("[^\\w\\s]","") + "," + c;
                         lwc_sum += wordcategory_probs.get(key);
                     }
+                    viewedwords.add(w);
                 }
                 double lcb = lc + lwc_sum;
                 cb_probs.put(c, lcb);
