@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class Main {
 
     public static final String STOPWORDS_FILE = "./stopwords.txt";
+    public static double MIN_PROB = 1000.0;
 
     public static int num_entries;
 
@@ -56,14 +57,15 @@ public class Main {
 
             System.out.println("-----------------------\n" + b.person);
 
-            //for each category, compute L(C|B) - sum of all L(W|C) probabilities for all W in B
+            double lowest_prob = MIN_PROB;
+            String predicted_category = "";
+            HashMap<String, Double> cb_probs = new HashMap<>();
+
+            // 1. for each category, compute L(C|B) - sum of all L(W|C) probabilities for all W in B
             for(String c : categories){
-
                 HashSet<String> viewedwords = new HashSet<>();
-
                 //get L(C)
                 double lc = category_probs.get(c);
-
                 //get sum of all L(W|C) values
                 double lwc_sum = 0.0;
                 for(String w : b.description.split("\\s+")){
@@ -72,11 +74,32 @@ public class Main {
                         lwc_sum += wordcategory_probs.get(key);
                     }
                 }
-
-
                 double lcb = lc + lwc_sum;
+                cb_probs.put(c, lcb);
                 System.out.println(lcb);
+
+                //update the lowest probability (used in recovering the actual probability)
+                if(lcb < lowest_prob){
+                    lowest_prob = lcb;
+                    predicted_category = c;
+                }
             }
+
+            // 2. get the prediction for this bio
+            System.out.println("prediction: " + predicted_category);
+
+            // 3. recover and print actual probabilities
+            double sval = 0.0;
+            for(String c : categories){
+                if(category_probs.get(c) < 7.0){
+                    sval += Math.pow(2.0, (lowest_prob - cb_probs.get(c)));
+                }
+            }
+            for(String c : categories){
+                double actual_prob = Math.pow(2.0, (lowest_prob - cb_probs.get(c))) / sval;
+                System.out.println("actual probability: " + actual_prob);
+            }
+
 
         }
 
